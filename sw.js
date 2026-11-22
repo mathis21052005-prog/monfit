@@ -1,7 +1,7 @@
 // Service worker : met l'appli en cache pour qu'elle s'ouvre même sans réseau.
 // Stratégie « stale-while-revalidate » : on sert la version en cache immédiatement
 // et on télécharge la nouvelle version en arrière-plan (visible au lancement suivant).
-const CACHE = 'monfit-v4';
+const CACHE = 'monfit-v5';
 const SHELL = [
   './', 'index.html', 'css/style.css', 'js/app.js', 'js/exercises.js', 'js/guides.js', 'js/programs.js', 'manifest.webmanifest',
   'icons/apple-touch-icon.png', 'icons/icon-192.png', 'icons/icon-512.png',
