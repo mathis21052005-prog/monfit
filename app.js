@@ -1,7 +1,7 @@
 'use strict';
 /* MonFit – appli perso de musculation & nutrition (PWA, données stockées sur l'appareil) */
 
-const APP_VERSION = '1.4.0';
+const APP_VERSION = '1.5.0';
 
 /* ================= Utilitaires ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -1248,6 +1248,17 @@ async function init() {
   render();
   setInterval(tick, 500);
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
-  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloading = false;
+    // Quand une nouvelle version de l'appli prend le relais, on recharge une fois (les données sont sauvegardées avant).
+    navigator.serviceWorker.addEventListener('controllerchange', async () => {
+      if (!hadController || reloading) return;
+      reloading = true; await saveNow(); location.reload();
+    });
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+    }).catch(() => {});
+  }
 }
 init();
